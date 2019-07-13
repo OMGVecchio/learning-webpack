@@ -2,10 +2,14 @@
   "presets": [
     [
       "@babel/preset-env",
-      {
-        "useBuiltIns": "entry"
-      }
+      // 一下配置需要额外依赖 core-js@2
+      // {
+      //   "useBuiltIns": "entry"
+      // }
     ]
   ],
-  "plugins": ["@babel/plugin-syntax-dynamic-import"]
+  "plugins": [
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-transform-runtime"
+  ]
 }

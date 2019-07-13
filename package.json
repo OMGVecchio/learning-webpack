@@ -13,6 +13,7 @@
     "start": "http-server ./dist -c-1 -o"
   },
   "dependencies": {
+    "@babel/runtime": "^7.5.4",
     "http-server": "^0.11.1",
     "jquery": "^3.4.1",
     "lodash": "^4.17.14",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@babel/core": "^7.5.4",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.5.0",
     "@babel/preset-env": "^7.5.4",
     "@types/happypack": "^5.0.0",
     "@types/html-webpack-plugin": "^3.2.0",
