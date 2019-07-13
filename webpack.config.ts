@@ -4,9 +4,10 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import ManifestPlugin from 'webpack-manifest-plugin'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
+/** 以下 import es6 语法报错 */
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
-/** es 语法报错 */
-// import SpeedMeasurePlugin from 'speed-measure-webpack-plugin'
+const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
+
 
 const config: webpack.Configuration = {
   /** V4 必配置 */
@@ -31,12 +32,12 @@ const config: webpack.Configuration = {
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'dependency',
-      filename: 'pages/index.html',
+      filename: 'pages/dependency.html',
       template: './src/index.html'
     }),
     new HtmlWebpackPlugin({
       title: 'react',
-      filename: 'pages/index.html',
+      filename: 'pages/react.html',
       template: './src/index.html'
     }),
     new ManifestPlugin(),
@@ -66,7 +67,26 @@ const config: webpack.Configuration = {
           reuseExistingChunk: true
         }
       }
-    }
+    },
+    runtimeChunk: true,
+    minimizer: [
+      // 多进程压缩
+      new ParallelUglifyPlugin({
+        cacheDir: '.cache/',
+        uglifyJS: {
+          output: {
+            comments: false,
+            beautify: false
+          },
+          compress: {
+            warning: false,
+            drop_console: true,
+            collapse_vars: true,
+            reduce_vars: true
+          }
+        }
+      })
+    ]
   },
   "resolve": {
     extensions: ['.js', '.tsx']

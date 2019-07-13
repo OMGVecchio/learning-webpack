@@ -1,8 +1,9 @@
-### v4
+### v4 新特性
 
-+ 布局除了安装 webpack 外，还需要安装 webpack-cli
-+ CommonsChunkPlugin 被移除，webpack-config 新增 optimization.splitChunks 和 optimization.runtimeChunk
-+ webpack-config 新增 mode 必配字段，取值为 "development|production|none"
++ 局部除了安装 webpack 外，还需要安装 webpack-cli
++ CommonsChunkPlugin 被移除，webpack-config 新增 optimization.splitChunks[拆分代码] 和 optimization.runtimeChunk[提取入口的 runtime 代码]
++ webpack-config 新增 mode 必配字段，取值为 "development|production|none"，取值为 production 时会自动开启 UglifyJsPlugin 等系列功能
++ mini-css-extract-plugin 替代 extract-text-webpack-plugin。优势：异步加载；不重复编译，性能更好；更容易使用；缺点：不支持热更新，开发环境需要引入 css-hot-loader。开发环境使用 optimize-css-assets-webpack-plugin 压缩
 
 ### 提升构建性能
 
@@ -17,6 +18,7 @@
 + thread-loader 将好资源的编译转到 worker pool 中
 + TS：在单独的进程中使用 fork-ts-checker-webpack-plugin 进行类型检查
 + TS：使用 ts-loader 时，设置 happyPackMode: true / transpileOnly: true
++ webpack-parallel-uglify-plugin：提升 JS 压缩速度。把任务分解给多个子进程去并发的执行，子进程处理完后再把结果发送给主进程，从而实现并发编译
 
 ### TODO
 

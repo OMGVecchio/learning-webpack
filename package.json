@@ -6,7 +6,7 @@
   "author": "vecchio <weichao@zbj.com>",
   "license": "MIT",
   "scripts": {
-    "dll": "webpack --mode development --config build/webpack.dll.config.ts",
+    "dll": "webpack --mode development --config webpack.dll.config.ts",
     "server": "webpack-dev-server --config webpack-dev-server.config.ts",
     "dev": "webpack --mode development",
     "release": "webpack --mode production",
@@ -40,6 +40,7 @@
     "webpack-cli": "^3.3.5",
     "webpack-dev-server": "^3.7.2",
     "webpack-manifest-plugin": "^2.0.4",
-    "webpack-merge": "^4.2.1"
+    "webpack-merge": "^4.2.1",
+    "webpack-parallel-uglify-plugin": "^1.1.0"
   }
 }
