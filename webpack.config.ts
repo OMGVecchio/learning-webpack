@@ -38,9 +38,9 @@ const config: webpack.Configuration = {
     rules: [{
       test: /\.tsx$/,
       include: path.resolve(__dirname, 'src'),
-      use: 'ts-loader',
+      // use: 'ts-loader',
       /** 报错，是 ts-loader 不支持 happypack？  */
-      // use: 'happypack/loader?id=happy-ts'
+      use: 'happypack/loader?id=happy-ts'
     }, {
       test: /\.js$/,
       include: path.resolve(__dirname, 'src'),
@@ -49,7 +49,10 @@ const config: webpack.Configuration = {
     }]
   },
   "plugins": [
+    /** 文件清理 */
     new CleanWebpackPlugin(),
+
+    /** html 模板 */
     new HtmlWebpackPlugin({
       title: 'dependency',
       filename: 'pages/dependency.html',
@@ -60,6 +63,8 @@ const config: webpack.Configuration = {
       filename: 'pages/react.html',
       template: './src/index.html'
     }),
+
+    /** happypack */
     createHappyPlugin('happy-babel', [{
       loader: 'babel-loader',
       options: {
@@ -73,14 +78,25 @@ const config: webpack.Configuration = {
       options: {
         // 只做编译，类型检测通过 fork-ts-checker-webpack-plugin 另起线程完成
         transpileOnly: true,
-        experimentalWatchApi: true
+        experimentalWatchApi: true,
+        // ts-loader 开启 happypack，必须配置该属性
+        happyPackMode: true
       }
     }]),
+
+    /** 新起线程做 ts 类型检测 */
     new ForkTsCheckerWebpackPlugin(),
-    new ManifestPlugin(),
+
+    /** 构建资源映射 */
+    // new ManifestPlugin(),
+
+    /** 构建分析 */
     // new BundleAnalyzerPlugin(),
     // new SpeedMeasurePlugin(),
-    new webpack.ProgressPlugin(),
+
+    /** 构建过程输出 */
+    // new webpack.ProgressPlugin(),
+
     /** v4 中被移除 */
     // new webpack.optimize.CommonsChunkPlugin()
   ],
