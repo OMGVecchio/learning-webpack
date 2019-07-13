@@ -19,6 +19,12 @@
 + TS：在单独的进程中使用 fork-ts-checker-webpack-plugin 进行类型检查
 + TS：使用 ts-loader 时，设置 happyPackMode: true / transpileOnly: true
 + webpack-parallel-uglify-plugin：提升 JS 压缩速度。把任务分解给多个子进程去并发的执行，子进程处理完后再把结果发送给主进程，从而实现并发编译
++ happypack：并发编译提升 loader 解析速度
+
+### 小结
+
++ babel-loader option 的 cacheDirectory 可开启缓存提升编译速速；添加 babel-loader 后开始正常的 import() 语法报错，需要在 .babelrc 的 plugins 中配置 @babel/plugin-syntax-dynamic-import
++ ts-loader 编译正常，添加 happypack 后报错，是不支持吗？
 
 ### TODO
 

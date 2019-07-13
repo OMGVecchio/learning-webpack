@@ -1,13 +1,24 @@
 import path from 'path'
+import os from 'os'
 import webpack from 'webpack'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import ManifestPlugin from 'webpack-manifest-plugin'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
-/** 以下 import es6 语法报错 */
+
+/** 以下用 es6 import 语法报错，没 @types */
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
+/** 以下用 es6 import 找不到某些方法，有 @types */
+const HappyPack = require('happypack')
 
+const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length })
+const createHappyPlugin = (id: string, loaders: any) => new HappyPack({
+  id,
+  loaders,
+  threadPool: happyThreadPool,
+  verbose: process.env.HAPPY_VERBOSE === '1'
+})
 
 const config: webpack.Configuration = {
   /** V4 必配置 */
@@ -25,7 +36,14 @@ const config: webpack.Configuration = {
     rules: [{
       test: /\.tsx$/,
       include: path.resolve(__dirname, 'src'),
-      use: 'ts-loader'
+      use: 'ts-loader',
+      /** 报错，是 ts-loader 不支持 happypack？  */
+      // use: 'happypack/loader?id=happy-ts'
+    }, {
+      test: /\.js$/,
+      include: path.resolve(__dirname, 'src'),
+      // use: 'babel-loader',
+      use: 'happypack/loader?id=happy-babel'
     }]
   },
   "plugins": [
@@ -40,6 +58,17 @@ const config: webpack.Configuration = {
       filename: 'pages/react.html',
       template: './src/index.html'
     }),
+    createHappyPlugin('happy-ts', [{
+      loader: 'ts-loader'
+    }]),
+    createHappyPlugin('happy-babel', [{
+      loader: 'babel-loader',
+      options: {
+        babelrc: true,
+        // 启用缓存
+        cacheDirectory: true
+      }
+    }]),
     new ManifestPlugin(),
     // new BundleAnalyzerPlugin(),
     // new SpeedMeasurePlugin(),
