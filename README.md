@@ -25,6 +25,7 @@
 
 + babel-loader option 的 cacheDirectory 可开启缓存提升编译速速；添加 babel-loader 后开始正常的 import() 语法报错，需要在 .babelrc 的 plugins 中配置 @babel/plugin-syntax-dynamic-import；解决每个 babel 编译的文件都存在的辅助代码：把 @babel/plugin-transform-runtime 配置到 .babelrc 的 plugins 中，引入 @babel/runtime 依赖
 + ts-loader 编译正常，添加 happypack 后报错，是不支持吗？
++ 过多的 loader 和 plugin 会拖慢构建性能，本项目简单的小文件，增添了越来越多的性能提升功能，构建时间却一直上升
 
 ### TODO
 

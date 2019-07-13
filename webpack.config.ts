@@ -5,6 +5,8 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import ManifestPlugin from 'webpack-manifest-plugin'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
+
 
 /** 以下用 es6 import 语法报错，没 @types */
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
@@ -58,9 +60,6 @@ const config: webpack.Configuration = {
       filename: 'pages/react.html',
       template: './src/index.html'
     }),
-    createHappyPlugin('happy-ts', [{
-      loader: 'ts-loader'
-    }]),
     createHappyPlugin('happy-babel', [{
       loader: 'babel-loader',
       options: {
@@ -69,6 +68,15 @@ const config: webpack.Configuration = {
         cacheDirectory: true
       }
     }]),
+    createHappyPlugin('happy-ts', [{
+      loader: 'ts-loader',
+      options: {
+        // 只做编译，类型检测通过 fork-ts-checker-webpack-plugin 另起线程完成
+        transpileOnly: true,
+        experimentalWatchApi: true
+      }
+    }]),
+    new ForkTsCheckerWebpackPlugin(),
     new ManifestPlugin(),
     // new BundleAnalyzerPlugin(),
     // new SpeedMeasurePlugin(),
