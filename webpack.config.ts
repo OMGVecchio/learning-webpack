@@ -160,6 +160,7 @@ const config: webpack.Configuration = {
       })
     ]
   },
+  // "recordsPath": path.resolve(__dirname, 'record.json'),
   "resolve": {
     extensions: ['.js', '.tsx']
   }
