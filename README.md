@@ -19,8 +19,7 @@
 + `DllPlugin` 单独编译不频繁变更代码
 + `parallel-webpack` 允许编译工作在 worker 池中进行
 + `thread-loader` 将好资源的编译转到 worker pool 中
-+ TS：在单独的进程中使用 `fork-ts-checker-webpack-plugin` 进行类型检查
-+ TS：使用 ts-loader 时，设置 `happyPackMode: true / transpileOnly: true`
++ `ts-loader`，设置 `happyPackMode: true` 开启 happypack，设置 `transpileOnly: true` 再使用 `fork-ts-checker-webpack-plugin` 在单独的进程中进行类型检查
 + `webpack-parallel-uglify-plugin`：提升 JS 压缩速度。把任务分解给多个子进程去并发的执行，子进程处理完后再把结果发送给主进程，从而实现并发编译
 + `happypack`：并发编译提升 loader 解析速度
 
@@ -30,10 +29,23 @@
 
 ### 小结
 
-+ babel-loader option 的 `cacheDirectory` 可开启缓存提升编译速速；添加 babel-loader 后开始正常的 `import()` 语法报错，需要在 .babelrc 的 plugins 中配置 `@babel/plugin-syntax-dynamic-import`；解决每个 babel 编译的文件都存在的辅助代码：把 `@babel/plugin-transform-runtime` 配置到 .babelrc 的 plugins 中，引入 `@babel/runtime` 依赖
-+ `ts-loader` 开启 `happypack` 模式后，options 的 `happyPackMode` 必须设置为 true
-+ `webpack.DllPlugin` 与 `webpack.DllReferencePlugin` 中的 `context` 字段要一致；`DllPlugin` 中 dll 暴露的对象名要与其配置 `output.library` 一致，然后在 `DllReferencePlugin` 所属配置中通过 `external` 属性一起使用。类似于之前尝试的页面直接加载第三方模块资源路径
-+ 过多的 loader 和 plugin 会拖慢构建性能，本项目简单的小文件，增添了越来越多的性能提升功能，构建时间却一直上升
+#### babel-loader
++ `option.cacheDirectory=true` 可开启缓存提升编译速速
++ `import()` 语法报错，需要在 .babelrc 的 plugins 中配置 `@babel/plugin-syntax-dynamic-import`
++ 解决 babel 编译文件都添加共同辅助代码：引入 `@babel/runtime` 依赖，把 `@babel/plugin-transform-runtime` 配置到 .babelrc 的 plugins 中
+
+#### ts-loader
++ 开启 `happypack` 模式后，必须设置 `options.happyPackMode=true`
++ 设置 `options.transpileOnly=true`，使 ts-loader 只进行编译操作；再加入 `fork-ts-checker-webpack-plugin` 在单独的进程中进行类型检查。可提高构建速度
+
+### Dll
++ 使用 Dll 需要重新配置一份新的 `webpack.dll.config` 文件，`entry` 中引入所有需要单独提出来编译的静态资源，设置 `output.library`；然后再引入 `webpack.DllPlugin` 插件，`DllPlugin` 中 dll 暴露的对象名 `name` 要与其配置 `output.library` 一致
++ 新 `webpack.config` 配置文件的 `webpack.DllReferencePlugin` 中的 `context` 字段要与 `DllPlugin` 中的一致，`manifest` 为 `DllPlugin` 配置打包出的资源映射文件路径
++ 多个项目使用相同库时，也可采用此方式，引入相同 manifest.json 文件，实现项目资源共享
++ `Dll` 与 `webpack.external` 功能类似，但模块引入方式不同。external 在全局暴露对象，Dll 采用的 webpack 模块化。最开始以为两者是搭配使用的，所以额外配置了重复的 external 导致页面资源加载报错
+
+### 其它
++ 过多的 loader 和 plugin 会拖慢构建性能，本项目简单的小文件，增添了越来越多的性能提升功能，构建时间却一直上升。所以得根据场景合理使用各个工具
 
 ### TODO
 

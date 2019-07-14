@@ -13,7 +13,7 @@ const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
 /** 以下用 es6 import 找不到某些方法，有 @types */
 const HappyPack = require('happypack')
 
-const DllManifestJSON = require('./dll/vender.manifest.json')
+const DllManifestJSON = require('./dist/dll/vender.manifest.json')
 
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length })
 const createHappyPlugin = (id: string, loaders: any) => new HappyPack({
@@ -36,7 +36,7 @@ const config: webpack.Configuration = {
     react: './src/pages/react/index'
   },
   "output": {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist/app'),
     filename: '[name]_[chunkhash].js',
     // chunkFilename: '[name].bundle.js',
   },
@@ -54,12 +54,13 @@ const config: webpack.Configuration = {
       use: 'happypack/loader?id=happy-babel'
     }]
   },
-  "externals": {
-    "react": 'React',
-    "react-dom": 'ReactDom',
-    "jquery": 'jQuery',
-    "lodash": 'lodash'
-  },
+  /** 与 dll 功效类似，但模块化引入方式上不同 */
+  // "externals": {
+  //   "react": 'React',
+  //   "react-dom": 'ReactDom',
+  //   "jquery": 'jQuery',
+  //   "lodash": 'lodash'
+  // },
   "plugins": [
     /** 文件清理 */
     new CleanWebpackPlugin(),
@@ -67,12 +68,12 @@ const config: webpack.Configuration = {
     /** html 模板 */
     new HtmlWebpackPlugin({
       title: 'dependency',
-      filename: 'pages/dependency.html',
+      filename: 'dependency.html',
       template: './src/index.html'
     }),
     new HtmlWebpackPlugin({
       title: 'react',
-      filename: 'pages/react.html',
+      filename: 'react.html',
       template: './src/index.html'
     }),
 
