@@ -7,19 +7,25 @@ import ManifestPlugin from 'webpack-manifest-plugin'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 
-
 /** 以下用 es6 import 语法报错，没 @types */
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
 /** 以下用 es6 import 找不到某些方法，有 @types */
 const HappyPack = require('happypack')
 
+const DllManifestJSON = require('./dll/vender.manifest.json')
+
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length })
 const createHappyPlugin = (id: string, loaders: any) => new HappyPack({
   id,
   loaders,
   threadPool: happyThreadPool,
-  verbose: process.env.HAPPY_VERBOSE === '1'
+  verbose: process.env.HAPPY_VERBOSE === '1',
+  /**
+   * 'cache' has been deprecated
+   * Configuring it will cause an error to be thrown in future versions
+   **/
+  // cache: true,
 })
 
 const config: webpack.Configuration = {
@@ -48,6 +54,12 @@ const config: webpack.Configuration = {
       use: 'happypack/loader?id=happy-babel'
     }]
   },
+  "externals": {
+    "react": 'React',
+    "react-dom": 'ReactDom',
+    "jquery": 'jQuery',
+    "lodash": 'lodash'
+  },
   "plugins": [
     /** 文件清理 */
     new CleanWebpackPlugin(),
@@ -62,6 +74,12 @@ const config: webpack.Configuration = {
       title: 'react',
       filename: 'pages/react.html',
       template: './src/index.html'
+    }),
+
+    /** dll 配置 */
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: DllManifestJSON
     }),
 
     /** happypack */
