@@ -44,6 +44,11 @@
 + 多个项目使用相同库时，也可采用此方式，引入相同 manifest.json 文件，实现项目资源共享
 + `Dll` 与 `webpack.external` 功能类似，但模块引入方式不同。external 在全局暴露对象，Dll 采用的 webpack 模块化。最开始以为两者是搭配使用的，所以额外配置了重复的 external 导致页面资源加载报错
 
+### vender 缓存
++ 在 `vender_[chunkhash].bundle.js` 第三方资源均为改动的情况下，其它文件修改后的重新打包可能导致 `vender_[chunkhash].bundle.js` 的 `chunkhash` 改变，因为 webpack 用自增的数字作为每一个模块的 ID，添加其它模块导致 vender 里的模块 ID 的变化，最终会导致 vender chunkhash 的变化
++ 解决 vender chunkhash 变化的方法：添加 `webpack.NamedChunksPlugin` 把 `chunkId` 变为固定的字符串标识；`HashedModuleIdsPlugin` 根据模块相对路径生成的 hash 作为标识，此比 `NamedChunksPlugin` 生成的字符串更少，适合用于线上；直接用其他 vender 缓存方式，比如 external，dll 等
++ 在最近版本的 webpack 中，我尝试通过新增模块试图来改变 `vender_[chunkhash]`，但是结果与上面的描述不同，`chunkhash` 并没有变化，是最新的 webpack 完善了此功能？
+
 ### 其它
 + 过多的 loader 和 plugin 会拖慢构建性能，本项目简单的小文件，增添了越来越多的性能提升功能，构建时间却一直上升。所以得根据场景合理使用各个工具
 
