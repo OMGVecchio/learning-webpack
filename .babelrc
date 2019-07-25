@@ -2,10 +2,23 @@
   "presets": [
     [
       "@babel/preset-env",
-      // 一下配置需要额外依赖 core-js@2
-      // {
-      //   "useBuiltIns": "entry"
-      // }
+      {
+        // 代码兼容平台
+        "targets": {
+          // 未配置默认转换所有 ES2015+ 代码
+          // 支持：chrome, opera, edge, firefox, safari, ie, ios, android, node, electron
+          // "chrome": 72,
+          // "browsers": ["last 2 versions"]
+        },
+        // 模块依赖等工作交给 webpack 处理，充分利用其 tree-shaking 技术
+        "modules": false,
+        // 是否打印日志
+        "debug": false,
+        // 是否开启自动支持 polyfill
+        // 需要额外依赖 @babel/polyfill
+        // 参数 false | “usage” | "entry"
+        // "useBuiltIns": "usage"
+      }
     ]
   ],
   "plugins": [
